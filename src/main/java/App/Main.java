@@ -46,7 +46,7 @@ public class Main {
 				for (Symbol s : r.getResult()) {
 					System.out.println("    Nombre: " + s.getDescription());
 					System.out.println("    Ticker: " + s.getSymbol());
-					System.out.println("    Tipo de acción: " + s.getType() + "\n");
+					System.out.println("    Tipo de acción: " + s.getType());
 
 					String urlQuote = "https://finnhub.io/api/v1/quote?symbol=" + s.getSymbol() + "&token=" + token;
 					HttpRequest requestQuote = HttpRequest.newBuilder().uri(URI.create(urlQuote)).build();
@@ -55,8 +55,8 @@ public class Main {
 							HttpResponse.BodyHandlers.ofString());
 					Quote quote = om.readValue(responseQuote.body(), Quote.class);
 
-					System.out.println("Precio actual: " + quote.getC());
-					System.out.println("% Cambio: " + quote.getDp());
+					System.out.println("    Precio actual: " + quote.getC());
+					System.out.println("    % Cambio: " + quote.getDp() +"\n");
 				}
 
 			}
