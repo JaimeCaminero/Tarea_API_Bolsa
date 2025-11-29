@@ -3,6 +3,9 @@ package App;
 import java.io.Serializable;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Root_SymbolLookup implements Serializable {
 	private List<Symbol> result;
 	private int count;
