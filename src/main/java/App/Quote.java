@@ -40,6 +40,7 @@ public class Quote implements Serializable {
 
 	public void setOpenPriceOfTheDay(Float openPriceOfTheDay) {
 		this.openPriceOfTheDay = openPriceOfTheDay;
+
 	}
 
 }
