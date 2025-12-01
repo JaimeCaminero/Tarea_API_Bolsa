@@ -1,11 +1,15 @@
 package App;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -17,8 +21,6 @@ public class Finnhub {
 	public Finnhub(String token) {
 		this.token = token;
 	}
-
-
 
 	public Root_SymbolLookup searchCompany(String name) {
 		try {

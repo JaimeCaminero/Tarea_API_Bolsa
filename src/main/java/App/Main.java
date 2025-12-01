@@ -11,12 +11,14 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Main {
+
 	public void obtenerNoticias(String simbolo) {
 		LocalDate fechaActual = LocalDate.now();
 		LocalDate semanaPasada = fechaActual.minusDays(7);
@@ -26,8 +28,8 @@ public class Main {
 		String parteVariable = "/company-news?symbol=" + simbolo + "&from=" + semanaPasada.format(formatter) + "&to="
 				+ fechaActual.format(formatter);
 		String httpTotal = inicioComunApi + parteVariable + token;
-		HttpClient client = HttpClient.newHttpClient();
 		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(httpTotal)).build();
+		HttpClient client = HttpClient.newHttpClient();
 		ObjectMapper om = new ObjectMapper();
 		try {
 			HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
@@ -45,9 +47,32 @@ public class Main {
 
 	}
 
+	public void mostrarInfoBase(String simbolo) {
+		String inicioComunApi = "https://finnhub.io/api/v1";
+		String token = "&token=d0hf44pr01qv1u373vhgd0hf44pr01qv1u373vi0";
+		String parteVariable = "quote?symbol=" + simbolo;
+		String httpTotal = inicioComunApi + parteVariable + token;
+		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(httpTotal)).build();
+		HttpClient client = HttpClient.newHttpClient();
+		ObjectMapper om = new ObjectMapper();
+		try {
+			HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+			Quote quote = om.readValue(response.body(), Quote.class);
+			System.out.println(simbolo + " ha abierto en " + quote.getOpenPriceOfTheDay());
+			System.out.println("Actualmente tiene un precio actual de " + quote.getCurrentPrice());
+			System.out.println("Tiene un cambio porcentual de: " + quote.getPercentChange());
+
+		} catch (IOException | InterruptedException e) {
+			e.printStackTrace();
+		}
+
+	}
+
 	public static void main(String[] args) {
 		Main main = new Main();
 		Scanner sc = new Scanner(System.in);
+		main.mostrarInfoBase("NDAQ");
+		// main.mostrarInfoBase("");
 		System.out.print("Introduce el nombre de la empresa que quieres buscar: ");
 		String nombreEmpresa = sc.nextLine(); // Creamos la variable token que nos permitirá usarlo en todas nuestras
 												// llamadas a las APIs
@@ -155,8 +180,23 @@ public class Main {
 					System.out.println("Perfecto, no mostraremos los últimos SEC Fillings");
 
 				}
+				int respuestaNoticias = 0;
 
-				main.obtenerNoticias(ticker);
+				System.out.println("¿Quieres obtener las ultimas noticias sobre " + nombreEmpresa + "?");
+				System.out.println("1. Si / 2. No ");
+				try {
+					respuestaNoticias = sc.nextInt();
+				} catch (InputMismatchException e) {
+					System.out.println("Por favor, introduzca un número");
+				}
+				if (respuestaNoticias == 1) {
+					System.out.println("Estas son las últimas noticias sobre " + nombreEmpresa);
+					main.obtenerNoticias(ticker);
+				} else if (respuestaNoticias == 2) {
+					System.out.println("Vale, no mostraremos más noticias.");
+				} else {
+					System.out.println("Número introducido no válido.");
+				}
 
 			}
 
