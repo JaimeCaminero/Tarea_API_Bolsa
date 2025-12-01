@@ -9,14 +9,44 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Main {
+	public void obtenerNoticias(String simbolo) {
+		LocalDate fechaActual = LocalDate.now();
+		LocalDate semanaPasada = fechaActual.minusDays(7);
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		String inicioComunApi = "https://finnhub.io/api/v1";
+		String token = "&token=d0hf44pr01qv1u373vhgd0hf44pr01qv1u373vi0";
+		String parteVariable = "/company-news?symbol=" + simbolo + "&from=" + semanaPasada.format(formatter) + "&to="
+				+ fechaActual.format(formatter);
+		String httpTotal = inicioComunApi + parteVariable + token;
+		HttpClient client = HttpClient.newHttpClient();
+		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(httpTotal)).build();
+		ObjectMapper om = new ObjectMapper();
+		try {
+			HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+			CompanyNews apple[] = om.readValue(response.body(), CompanyNews[].class);
+			for (int i = 0; i < 3; i++) {
+				System.out.println(apple[i].getHeadline());
+				System.out.println(apple[i].getSummary());
+				System.out.println("Fuente: " + apple[i].getSource());
+				System.out.println(" ");
+			}
+
+		} catch (IOException | InterruptedException e) {
+			e.printStackTrace();
+		}
+
+	}
 
 	public static void main(String[] args) {
+		Main main = new Main();
 		Scanner sc = new Scanner(System.in);
 		System.out.print("Introduce el nombre de la empresa que quieres buscar: ");
 		String nombreEmpresa = sc.nextLine(); // Creamos la variable token que nos permitirá usarlo en todas nuestras
@@ -87,6 +117,8 @@ public class Main {
 								om.getTypeFactory().constructCollectionType(List.class, SECFillings.class));
 
 						for (SECFillings f : fillings) {
+							// for (int i = 0 ; i < 4; i++ ){
+							// En vez de f, sería fillings.get(i)
 							System.out.println("\n=====================================");
 							System.out.println("    Cik: " + f.getCik());
 							System.out.println("    Tipo: " + f.getForm());
@@ -110,6 +142,7 @@ public class Main {
 						try {
 							Desktop desktop = Desktop.getDesktop();
 							desktop.browse(new URI(URLCik));
+
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -122,6 +155,8 @@ public class Main {
 					System.out.println("Perfecto, no mostraremos los últimos SEC Fillings");
 
 				}
+
+				main.obtenerNoticias(ticker);
 
 			}
 
