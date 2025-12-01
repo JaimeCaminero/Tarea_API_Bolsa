@@ -11,6 +11,7 @@ public class SECFillings implements Serializable{
 	private String filledDate;
 	private String acceptedDate;
 	private String filingUrl;
+	private String accessNumber;
 	
 	public SECFillings() {
 		
@@ -55,6 +56,16 @@ public class SECFillings implements Serializable{
 	public void setFilingUrl(String filingUrl) {
 		this.filingUrl = filingUrl;
 	}
+
+	public String getAccessNumber() {
+		return accessNumber;
+	}
+
+	public void setAccessNumber(String accessNumber) {
+		this.accessNumber = accessNumber;
+	}
+	
+	
 
 	
 	
