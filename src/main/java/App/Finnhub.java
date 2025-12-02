@@ -70,7 +70,7 @@ public class Finnhub {
 				System.out.println("El S&P 500 (" + simbolo + ") ha abierto en " + quote.getOpenPriceOfTheDay() + "$");
 			}
 			System.out.println("Actualmente tiene un precio de " + quote.getCurrentPrice() + "$");
-			System.out.println("Tiene un cambio porcentual de: " + quote.getPercentChange() + "%");
+			System.out.println("Tiene un cambio porcentual de: " + quote.getPercentChange() + "% \n");
 
 		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
