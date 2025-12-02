@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.ConnectException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
@@ -132,7 +133,7 @@ public class Finnhub {
 			}
 
 			if (!existeTicker) {
-				System.out.println("El ticker introducido no coincide con ninguno de los resultados.");
+				System.out.println("El ticker introducido no coincide con ninguno de los resultados.\n");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
