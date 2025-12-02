@@ -3,15 +3,91 @@ package App;
 import java.util.Scanner;
 
 public class Main {
+
+	public void Menu() {
+		Scanner sc = new Scanner(System.in);
+		Finnhub miFinn = new Finnhub();
+		boolean continuar = true;
+		System.out.println("Bienvenido a nuestro programa de Bolsa!");
+		while (continuar) {
+			System.out.println("Escoja una de las siguientes opciones:");
+			System.out.println("1. Buscar empresa por nombre");
+			System.out.println("2. Buscar noticias empresa por Ticker");
+			System.out.println("3. Ver SEC Fillings de una empresa");
+			System.out.println("4. Guardar empresa en Watchlist");
+			System.out.println("5. Salir");
+			System.out.print("Opción escogida: ");
+
+			if (sc.hasNextInt()) {
+				int respuesta = sc.nextInt();
+				sc.nextLine();
+
+				switch (respuesta) {
+				case 1:
+					System.out.print("\nIntroduce el nombre de la empresa que quieres buscar: ");
+					String nombreEmpresa = sc.nextLine();
+					while (nombreEmpresa.trim().isEmpty()) {
+						System.out.print("No puedes dejarlo vacío. Introduce un nombre válido: ");
+						nombreEmpresa = sc.nextLine();
+					}
+					miFinn.mostrarSymbolLookup(nombreEmpresa);
+					System.out.print("\nUna vez vistos los resultados, introduce el Ticker de la empresa deseada: ");
+					String ticker = sc.nextLine();
+					while (ticker.trim().isEmpty()) {
+						System.out.print("No puedes dejarlo vacío. Introduce un ticker válido: ");
+						ticker = sc.nextLine();
+					}
+					miFinn.buscarEmpresaDeseada(nombreEmpresa, ticker);
+					break;
+				case 2:
+					System.out.print("Introduce el Ticker de la empresa de la que quieres ver noticias: ");
+					String tickerEmpresa = sc.nextLine();
+					while (tickerEmpresa.trim().isEmpty()) {
+						System.out.print("No puedes dejarlo vacío. Introduce un ticker válido: ");
+						tickerEmpresa = sc.nextLine();
+					}
+					miFinn.obtenerNoticias(tickerEmpresa);
+					break;
+				case 3:
+					System.out.print("Introduce el Ticker de la empresa de la que quieres ver los SEC Fillings: ");
+					String tickerFillings = sc.nextLine();
+					while (tickerFillings.trim().isEmpty()) {
+						System.out.print("No puedes dejarlo vacío. Introduce un ticker válido: ");
+						tickerEmpresa = sc.nextLine();
+					}
+					miFinn.mostrarSECFilling(tickerFillings);
+					System.out.println("Quieres abrir uno en web?");
+					miFinn.buscarFillingWeb(tickerFillings);
+					break;
+
+				case 5:
+					continuar = false;
+					System.out.println("Saliendo....");
+					break;
+
+				default:
+					System.out.println("\nError. Introduce uno de los números indicados\n");
+					break;
+				}
+			} else {
+				System.out.println("\nError, tienes que introducir una opción válida\n");
+				sc.nextLine();
+			}
+		}
+	}
+
 	public static void main(String[] args) {
 		Finnhub main = new Finnhub();
+		Main miMain = new Main();
 		Scanner sc = new Scanner(System.in);
 		main.mostrarInfoBase("QQQ");
 		main.mostrarInfoBase("SPY");
+
+		miMain.Menu();
+
 		System.out.print("Introduce el nombre de la empresa que quieres buscar: ");
 		String nombreEmpresa = sc.nextLine(); // Creamos la variable token que nos permitirá usarlo en todas nuestras
 												// llamadas a las APIs
-		final String token = "d4lg8khr01qr851o6g90d4lg8khr01qr851o6g9g";
 		// Necesitamos evitar los espacios y codificarlos de forma que la petición de la
 		// API lo reconozca
 		main.mostrarSymbolLookup(nombreEmpresa);
