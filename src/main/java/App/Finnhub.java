@@ -79,7 +79,7 @@ public class Finnhub {
 	}
 
 	public void guardarWatchlist(String ticker) {
-		String urlQuoteWatchlist = inicioComunApi + "/quote?symbol=" + ticker + "&token=" + token;
+		String urlQuoteWatchlist = inicioComunApi + "/quote?symbol=" + ticker + token;
 		HttpRequest requestQuoteWatchlist = HttpRequest.newBuilder().uri(URI.create(urlQuoteWatchlist)).build();
 		try {
 			HttpResponse<String> responseQuoteWatchlist = client.send(requestQuoteWatchlist, BodyHandlers.ofString());
@@ -106,11 +106,12 @@ public class Finnhub {
 	public void buscarEmpresaDeseada(String nombreEmpresa, String tickerEmpresa) {
 		String encoded = URLEncoder.encode(nombreEmpresa, StandardCharsets.UTF_8);
 		try {
-			String urlSymbol = inicioComunApi + "/search?q=" + encoded + "&exchange=US&token=" + token;
+			String urlSymbol = inicioComunApi + "/search?q=" + encoded + "&exchange=US" + token;
 			HttpRequest requestSymbol = HttpRequest.newBuilder().uri(URI.create(urlSymbol)).build();
 			HttpResponse<String> responseSearch = client.send(requestSymbol, BodyHandlers.ofString());
 
-			System.out.println(responseSearch.statusCode() + ":\n" + responseSearch.body());
+			// System.out.println(responseSearch.statusCode() + ":\n" +
+			// responseSearch.body());
 
 			Root_SymbolLookup r = om.readValue(responseSearch.body(), Root_SymbolLookup.class);
 
@@ -137,7 +138,8 @@ public class Finnhub {
 		String encoded = URLEncoder.encode(nombreEmpresa, StandardCharsets.UTF_8);
 
 		try {
-			String urlSymbol = inicioComunApi + "/search?q=" + encoded + "&exchange=US&token=" + token;
+			String urlSymbol = inicioComunApi + "/search?q=" + encoded + "&exchange=US" + token;
+			System.out.println(urlSymbol);
 			HttpRequest requestSymbol = HttpRequest.newBuilder().uri(URI.create(urlSymbol)).build();
 			HttpResponse<String> responseSearch = client.send(requestSymbol, BodyHandlers.ofString());
 
@@ -155,7 +157,7 @@ public class Finnhub {
 					System.out.println("    Ticker: " + s.getSymbol());
 					System.out.println("    Tipo de acción: " + s.getType());
 
-					String urlQuote = inicioComunApi + "/quote?symbol=" + s.getSymbol() + "&token=" + token;
+					String urlQuote = inicioComunApi + "/quote?symbol=" + s.getSymbol() + token;
 					HttpRequest requestQuote = HttpRequest.newBuilder().uri(URI.create(urlQuote)).build();
 
 					HttpResponse<String> responseQuote = client.send(requestQuote,
@@ -176,7 +178,7 @@ public class Finnhub {
 
 	public void buscarFillingWeb(String ticker) {
 
-		String urlSECFillings = inicioComunApi + "/stock/filings?symbol=" + ticker + "&token=" + token;
+		String urlSECFillings = inicioComunApi + "/stock/filings?symbol=" + ticker + token;
 		HttpRequest requestSECFilling = HttpRequest.newBuilder().uri(URI.create(urlSECFillings)).build();
 		try {
 			HttpResponse<String> responseSECFilling = client.send(requestSECFilling, BodyHandlers.ofString());
@@ -208,7 +210,7 @@ public class Finnhub {
 	}
 
 	public void mostrarSECFilling(String ticker) {
-		String urlSECFillings = inicioComunApi + "/stock/filings?symbol=" + ticker + "&token=" + token;
+		String urlSECFillings = inicioComunApi + "/stock/filings?symbol=" + ticker + token;
 		HttpRequest requestSECFilling = HttpRequest.newBuilder().uri(URI.create(urlSECFillings)).build();
 
 		try {
