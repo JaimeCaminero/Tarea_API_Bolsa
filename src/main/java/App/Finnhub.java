@@ -31,25 +31,30 @@ public class Finnhub {
 		this.inicioComunApi = "https://finnhub.io/api/v1";
 	}
 
-	public void obtenerNoticias(String simbolo) {
+	public void obtenerNoticias(String ticker) {
+		String encoded = URLEncoder.encode(ticker, StandardCharsets.UTF_8);
 		LocalDate semanaPasada = fechaActual.minusDays(7);
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		String parteVariable = "/company-news?symbol=" + simbolo + "&from=" + semanaPasada.format(formatter) + "&to="
+		String parteVariable = "/company-news?symbol=" + encoded + "&from=" + semanaPasada.format(formatter) + "&to="
 				+ fechaActual.format(formatter);
 		String httpTotal = inicioComunApi + parteVariable + token;
 		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(httpTotal)).build();
 		try {
 			HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
-			CompanyNews apple[] = om.readValue(response.body(), CompanyNews[].class);
-			for (int i = 0; i < 3; i++) {
-				System.out.println("Noticia " + (i + 1));
-				System.out.println("-------------------");
-				System.out.println(apple[i].getHeadline());
-				System.out.println(apple[i].getSummary());
-				System.out.println("Fuente: " + apple[i].getSource());
-				System.out.println(" ");
-			}
+			CompanyNews empresaNoticias[] = om.readValue(response.body(), CompanyNews[].class);
 
+			if (empresaNoticias.length == 0) {
+				System.out.println("La empresa no existe o no se han encontrado noticias para esa empresa. \n");
+			} else {
+				for (int i = 0; i < 3; i++) {
+					System.out.println("Noticia " + (i + 1));
+					System.out.println("-------------------");
+					System.out.println(empresaNoticias[i].getHeadline());
+					System.out.println(empresaNoticias[i].getSummary());
+					System.out.println("Fuente: " + empresaNoticias[i].getSource());
+					System.out.println(" ");
+				}
+			}
 		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -79,20 +84,21 @@ public class Finnhub {
 	}
 
 	public void guardarWatchlist(String ticker) {
-		String urlQuoteWatchlist = inicioComunApi + "/quote?symbol=" + ticker + token;
+		String encoded = URLEncoder.encode(ticker, StandardCharsets.UTF_8);
+		String urlQuoteWatchlist = inicioComunApi + "/quote?symbol=" + encoded + token;
 		HttpRequest requestQuoteWatchlist = HttpRequest.newBuilder().uri(URI.create(urlQuoteWatchlist)).build();
 		try {
 			HttpResponse<String> responseQuoteWatchlist = client.send(requestQuoteWatchlist, BodyHandlers.ofString());
 			Quote quote = om.readValue(responseQuoteWatchlist.body(), Quote.class);
 			double precioActualWatchlist = quote.getCurrentPrice();
 			String precioDosDecimales = String.format("%.2f", precioActualWatchlist);
-			String formato = ticker + " | " + precioDosDecimales + "$ | " + fechaActual;
+			String formato = encoded + " | " + precioDosDecimales + "$ | " + fechaActual;
 			try (FileWriter fw = new FileWriter("miWatchlist.txt", true);
 					BufferedWriter bw = new BufferedWriter(fw);
 					PrintWriter printwriter = new PrintWriter(bw)) {
 				printwriter.println(formato);
 				System.out
-						.println("Se ha añadido la acción " + ticker + " a la watchlist con el precio y fecha actual");
+						.println("Se ha añadido la acción " + encoded + " a la watchlist con el precio y fecha actual");
 
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -134,23 +140,23 @@ public class Finnhub {
 
 	}
 
-	public void mostrarSymbolLookup(String nombreEmpresa) {
+	public boolean mostrarSymbolLookup(String nombreEmpresa) {
 		String encoded = URLEncoder.encode(nombreEmpresa, StandardCharsets.UTF_8);
-
+		boolean existe = false;
 		try {
 			String urlSymbol = inicioComunApi + "/search?q=" + encoded + "&exchange=US" + token;
-			System.out.println(urlSymbol);
 			HttpRequest requestSymbol = HttpRequest.newBuilder().uri(URI.create(urlSymbol)).build();
 			HttpResponse<String> responseSearch = client.send(requestSymbol, BodyHandlers.ofString());
 
-			System.out.println(responseSearch.statusCode() + ":\n" + responseSearch.body());
+			// System.out.println(responseSearch.statusCode() + ":\n" +
+			// responseSearch.body());
 
 			Root_SymbolLookup r = om.readValue(responseSearch.body(), Root_SymbolLookup.class);
 
 			System.out.println("Resultados obtenidos: " + r.getCount());
 
 			if (r.getCount() == 0) {
-				System.out.println("Por favor, revisa que has introducido el nombre correctamente");
+				System.out.println("Por favor, revisa que has introducido el nombre correctamente \n");
 			} else {
 				for (Symbol s : r.getResult()) {
 					System.out.println("    Nombre: " + s.getDescription());
@@ -166,6 +172,7 @@ public class Finnhub {
 
 					System.out.println("    Precio actual: " + quote.getCurrentPrice());
 					System.out.println("    % Cambio: " + quote.getPercentChange() + "\n");
+					existe = true;
 				}
 			}
 		} catch (IOException e) {
@@ -174,11 +181,12 @@ public class Finnhub {
 			e.printStackTrace();
 
 		}
+		return existe;
 	}
 
 	public void buscarFillingWeb(String ticker) {
-
-		String urlSECFillings = inicioComunApi + "/stock/filings?symbol=" + ticker + token;
+		String encoded = URLEncoder.encode(ticker, StandardCharsets.UTF_8);
+		String urlSECFillings = inicioComunApi + "/stock/filings?symbol=" + encoded + token;
 		HttpRequest requestSECFilling = HttpRequest.newBuilder().uri(URI.create(urlSECFillings)).build();
 		try {
 			HttpResponse<String> responseSECFilling = client.send(requestSECFilling, BodyHandlers.ofString());
@@ -209,31 +217,37 @@ public class Finnhub {
 		}
 	}
 
-	public void mostrarSECFilling(String ticker) {
-		String urlSECFillings = inicioComunApi + "/stock/filings?symbol=" + ticker + token;
+	public boolean mostrarSECFilling(String ticker) {
+		String encoded = URLEncoder.encode(ticker, StandardCharsets.UTF_8);
+		String urlSECFillings = inicioComunApi + "/stock/filings?symbol=" + encoded + token;
 		HttpRequest requestSECFilling = HttpRequest.newBuilder().uri(URI.create(urlSECFillings)).build();
-
+		boolean existe = false;
 		try {
 			HttpResponse<String> responseSECFilling = client.send(requestSECFilling, BodyHandlers.ofString());
 
-			System.out.println("SEC Fillings para " + ticker + ":");
+			System.out.println("SEC Fillings para " + encoded + ":");
 
 			List<SECFillings> fillings = om.readValue(responseSECFilling.body(),
 					om.getTypeFactory().constructCollectionType(List.class, SECFillings.class));
-
-			int maxFillings = Math.min(4, fillings.size());
-			for (int i = 0; i < maxFillings; i++) {
-				System.out.println("\n-------------------------------------");
-				System.out.println("    Access Number: " + fillings.get(i).getAccessNumber());
-				System.out.println("    Cik: " + fillings.get(i).getCik());
-				System.out.println("    Tipo: " + fillings.get(i).getForm());
-				System.out.println("    Fecha inscripción: " + fillings.get(i).getFilledDate());
-				System.out.println("    Fecha aceptado: " + fillings.get(i).getAcceptedDate());
-				System.out.println("    Filing URL: " + fillings.get(i).getFilingUrl());
-				System.out.println("-------------------------------------\n");
+			if (fillings.size() == 0) {
+				System.out.println("La empresa no existe o no se han encontrado SEC Fillings para esa empresa. \n");
+			} else {
+				int maxFillings = Math.min(4, fillings.size());
+				for (int i = 0; i < maxFillings; i++) {
+					System.out.println("\n-------------------------------------");
+					System.out.println("    Access Number: " + fillings.get(i).getAccessNumber());
+					System.out.println("    Cik: " + fillings.get(i).getCik());
+					System.out.println("    Tipo: " + fillings.get(i).getForm());
+					System.out.println("    Fecha inscripción: " + fillings.get(i).getFilledDate());
+					System.out.println("    Fecha aceptado: " + fillings.get(i).getAcceptedDate());
+					System.out.println("    Filing URL: " + fillings.get(i).getFilingUrl());
+					System.out.println("-------------------------------------\n");
+					existe = true;
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return existe;
 	}
 }

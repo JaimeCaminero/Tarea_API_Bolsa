@@ -30,14 +30,16 @@ public class Main {
 						System.out.print("No puedes dejarlo vacío. Introduce un nombre válido: ");
 						nombreEmpresa = sc.nextLine();
 					}
-					miFinn.mostrarSymbolLookup(nombreEmpresa);
-					System.out.print("\nUna vez vistos los resultados, introduce el Ticker de la empresa deseada: ");
-					String ticker = sc.nextLine();
-					while (ticker.trim().isEmpty()) {
-						System.out.print("No puedes dejarlo vacío. Introduce un ticker válido: ");
-						ticker = sc.nextLine();
+					if (miFinn.mostrarSymbolLookup(nombreEmpresa)) {
+						System.out
+								.print("\nUna vez vistos los resultados, introduce el Ticker de la empresa deseada: ");
+						String ticker = sc.nextLine();
+						while (ticker.trim().isEmpty()) {
+							System.out.print("No puedes dejarlo vacío. Introduce un ticker válido: ");
+						}
+						miFinn.buscarEmpresaDeseada(nombreEmpresa, ticker);
+
 					}
-					miFinn.buscarEmpresaDeseada(nombreEmpresa, ticker);
 					break;
 				case 2:
 					System.out.print("Introduce el Ticker de la empresa de la que quieres ver noticias: ");
@@ -55,11 +57,47 @@ public class Main {
 						System.out.print("No puedes dejarlo vacío. Introduce un ticker válido: ");
 						tickerEmpresa = sc.nextLine();
 					}
-					miFinn.mostrarSECFilling(tickerFillings);
-					System.out.println("Quieres abrir uno en web?");
-					miFinn.buscarFillingWeb(tickerFillings);
+					tickerFillings.trim();
+					if (miFinn.mostrarSECFilling(tickerFillings)) {
+						System.out.println("Quieres abrir uno en web?");
+						System.out.println("1. Sí");
+						System.out.println("2. No");
+						System.out.print("Respuesta:");
+
+						int respuestaSEC = -1;
+						boolean entradaValida = false;
+
+						do {
+							if (sc.hasNextInt()) {
+								respuestaSEC = sc.nextInt();
+								sc.nextLine();
+								if (respuestaSEC == 1 || respuestaSEC == 2) {
+									entradaValida = true;
+
+								} else {
+									System.out.println("Por favor, introduzca únicamente 1 o 2.");
+								}
+							} else {
+								System.out.println("Por favor, introduzca un número (1 o 2).");
+								System.out.println("Quieres abrir uno en web?");
+								System.out.println("1. Sí");
+								System.out.println("2. No");
+								System.out.print("Respuesta:");
+								sc.nextLine();
+							}
+						} while (!entradaValida);
+						if (respuestaSEC == 1)
+							miFinn.buscarFillingWeb(tickerFillings);
+						else {
+							System.out.println("No abriremos ningún SEC Fillings en web");
+						}
+					}
 					break;
 
+				case 4:		
+					String tickerFichero = sc.nextLine();
+					miFinn.guardarWatchlist(tickerFichero );
+					break;
 				case 5:
 					continuar = false;
 					System.out.println("Saliendo....");
