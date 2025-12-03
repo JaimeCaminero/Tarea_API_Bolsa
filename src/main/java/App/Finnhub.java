@@ -57,7 +57,7 @@ public class Finnhub {
 				}
 			}
 		} catch (IOException | InterruptedException e) {
-			e.printStackTrace();
+			throw new ErrorConnectException("No hay conexión a internet");
 		}
 
 	}
@@ -78,10 +78,15 @@ public class Finnhub {
 			System.out.println("Actualmente tiene un precio de " + quote.getCurrentPrice() + "$");
 			System.out.println("Tiene un cambio porcentual de: " + quote.getPercentChange() + "% \n");
 
-		} catch (IOException | InterruptedException e) {
-			e.printStackTrace();
+		} catch (IOException e) {
+			if (e.getCause() instanceof ConnectException) {
+				throw new ErrorConnectException("No hay conexión a internet");
+			} else {
+				e.printStackTrace();
+			}
+		} catch (InterruptedException e) {
+			throw new ErrorConnectException("Se ha interrumpido la operación");
 		}
-
 	}
 
 	public void guardarWatchlist(String ticker) {
@@ -104,8 +109,14 @@ public class Finnhub {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (IOException e) {
+			if (e.getCause() instanceof ConnectException) {
+				throw new ErrorConnectException("No hay conexión a internet");
+			} else {
+				e.printStackTrace();
+			}
+		} catch (InterruptedException e) {
+			throw new ErrorConnectException("Se ha interrumpido la operación");
 		}
 
 	}
@@ -135,8 +146,14 @@ public class Finnhub {
 			if (!existeTicker) {
 				System.out.println("El ticker introducido no coincide con ninguno de los resultados.\n");
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (IOException e) {
+			if (e.getCause() instanceof ConnectException) {
+				throw new ErrorConnectException("No hay conexión a internet");
+			} else {
+				e.printStackTrace();
+			}
+		} catch (InterruptedException e) {
+			throw new ErrorConnectException("Se ha interrumpido la operación");
 		}
 
 	}
@@ -177,10 +194,13 @@ public class Finnhub {
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			if (e.getCause() instanceof ConnectException) {
+				throw new ErrorConnectException("No hay conexión a internet");
+			} else {
+				e.printStackTrace();
+			}
 		} catch (InterruptedException e) {
-			e.printStackTrace();
-
+			throw new ErrorConnectException("Se ha interrumpido la operación");
 		}
 		return existe;
 	}
@@ -197,6 +217,7 @@ public class Finnhub {
 			Scanner sc = new Scanner(System.in);
 			System.out.print("Introduce el Access Number del filling que quieres ver en la web:");
 			String AccessNumber = sc.nextLine();
+			System.out.println();
 			String URLCik = null;
 			for (SECFillings f : fillings) {
 				if (f.getAccessNumber().equals(AccessNumber)) {
@@ -213,8 +234,14 @@ public class Finnhub {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (IOException e) {
+			if (e.getCause() instanceof ConnectException) {
+				throw new ErrorConnectException("No hay conexión a internet");
+			} else {
+				e.printStackTrace();
+			}
+		} catch (InterruptedException e) {
+			throw new ErrorConnectException("Se ha interrumpido la operación");
 		}
 	}
 
@@ -246,8 +273,14 @@ public class Finnhub {
 					existe = true;
 				}
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (IOException e) {
+			if (e.getCause() instanceof ConnectException) {
+				throw new ErrorConnectException("No hay conexión a internet");
+			} else {
+				e.printStackTrace();
+			}
+		} catch (InterruptedException e) {
+			throw new ErrorConnectException("Se ha interrumpido la operación");
 		}
 		return existe;
 	}
