@@ -33,8 +33,13 @@ public class Finnhub {
 	}
 
 	public void obtenerNoticias(String ticker) {
+		// Convertimos los espacios por caracteres legibles por las páginas web como
+		// "&","+" o "-"(Carcateres UTF8). Mediante URLEncoder y su método principal
+		// encode.
 		String encoded = URLEncoder.encode(ticker, StandardCharsets.UTF_8);
+		// LocalDate nos devuelve una fecha en fromato año-mes-dia
 		LocalDate semanaPasada = fechaActual.minusDays(7);
+		// DateTimerFormatter sirve para luego poder formatear la fecha a String
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		String parteVariable = "/company-news?symbol=" + encoded + "&from=" + semanaPasada.format(formatter) + "&to="
 				+ fechaActual.format(formatter);
