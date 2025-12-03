@@ -92,17 +92,22 @@ public class Finnhub {
 			HttpResponse<String> responseQuoteWatchlist = client.send(requestQuoteWatchlist, BodyHandlers.ofString());
 			Quote quote = om.readValue(responseQuoteWatchlist.body(), Quote.class);
 			double precioActualWatchlist = quote.getCurrentPrice();
-			String precioDosDecimales = String.format("%.2f", precioActualWatchlist);
-			String formato = encoded + " | " + precioDosDecimales + "$ | " + fechaActual;
-			try (FileWriter fw = new FileWriter("miWatchlist.txt", true);
-					BufferedWriter bw = new BufferedWriter(fw);
-					PrintWriter printwriter = new PrintWriter(bw)) {
-				printwriter.println(formato);
-				System.out
-						.println("Se ha añadido la acción " + encoded + " a la watchlist con el precio y fecha actual");
+			if (precioActualWatchlist != 0) {
+				String precioDosDecimales = String.format("%.2f", precioActualWatchlist);
+				String formato = encoded + " | " + precioDosDecimales + "$ | " + fechaActual;
+				try (FileWriter fw = new FileWriter("miWatchlist.txt", true);
+						BufferedWriter bw = new BufferedWriter(fw);
+						PrintWriter printwriter = new PrintWriter(bw)) {
+					printwriter.println(formato);
+					System.out.println(
+							"Se ha añadido la acción " + encoded + " a la watchlist con el precio y fecha actual");
 
-			} catch (IOException e) {
-				e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			} else {
+				System.out.println("Esta empresa no cotiza \n");
+				return;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
