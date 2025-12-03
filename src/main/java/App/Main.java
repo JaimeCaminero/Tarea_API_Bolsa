@@ -104,6 +104,7 @@ public class Main {
 				break;
 
 			case 4:
+				System.out.print("Introduce el ticker de la empresa que quieres guardar:");
 				String tickerFichero = sc.nextLine();
 				miFinn.guardarWatchlist(tickerFichero);
 				break;
